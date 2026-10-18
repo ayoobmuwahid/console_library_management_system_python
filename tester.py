@@ -4,9 +4,7 @@ def add_book():
     while True:
         try:
 
-            identity = input("Enter identity: ")
-            if not identity.replace(" ", "").isalnum():
-                raise TypeError("Expected a string")
+            identity = int(input("Enter identity: "))
             name = input("Enter book title: ")
             if not name.replace(" ", "").isalnum():
                 raise TypeError("Expected a string")
@@ -30,4 +28,3 @@ def add_book():
 
 
 add_book()
-xxx

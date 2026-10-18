@@ -15,13 +15,17 @@ class Book:
                     "total_copies": self.total_copies,
                     "available_copies": self.available_copies})
 
+class Library:
+    def __init__(self,books):
+        self.book = []
+
+
+
 
 def add_book():
     while True:
         try:
-            identity = input("Enter identity: ")
-            if isinstance(identity, (int, float, bool)):
-                raise TypeError("Expected a string")
+            identity = int(input("Enter identity: "))
             title = input("Enter book title: ")
             if not title.replace(" ", "").isalpha():
                 raise TypeError("Expected a string")
@@ -44,6 +48,7 @@ def add_book():
 
 
 def main():
+    library = Library()
     books = []
     while True:
         try:
@@ -91,7 +96,8 @@ Select an option: """))
                         "-----------------------------------------------------------------------------------------------------------------------------------------------------------\n")
                     continue
 
+            case 3:
+                ...
 
 main()
 
-##########
