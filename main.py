@@ -1,4 +1,4 @@
-import sys
+
 class Book:
     def __init__(self, identity, title, author, category, total_copies, available_copies):
         self.identity = identity
@@ -9,24 +9,41 @@ class Book:
         self.available_copies = available_copies
 
     def __str__(self):
-        return f"{self.identity} of book, {self.title}, authored by {self.author}, of category {self.category}, with total of {self.total_copies} copies"
+        return str( {"identity": self.identity,
+                "title": self.title,
+                "author": self.author,
+                "category": self.category,
+                "total_copies": self.total_copies,
+                "available_copies": self.available_copies})
 
 def add_book():
 
-    try:
-        identity = input("Enter identity: ")
-        name = input("Enter book title: ")
-        author = input("Enter book author: ")
-        category = input("Enter book category: ")
-        total_copies = int(input("Enter total copies: "))
-        available_copies = int(input("Enter available copies: "))
-        if available_copies > total_copies:
-            print("Available copies exceeds total copies.")
+    while True:
+        try:
+            identity = input("Enter identity: ")
+            if not identity.replace(" ", "").isalnum():
+                raise TypeError("Expected a string")
+            title = input("Enter book title: ")
+            if not title.replace(" ", "").isalnum():
+                raise TypeError("Expected a string")
+            author = input("Enter book author: ")
+            if not author.replace(" ", "").isalnum():
+                raise TypeError("Expected a string")
+            category = input("Enter book category: ")
+            if not category.replace(" ", "").isalpha():
+                raise TypeError("Expected a string")
+            total_copies = int(input("Enter total copies: "))
+            available_copies = int(input("Enter available copies: "))
+            if available_copies > total_copies:
+                print("Available copies exceeds total copies.")
+                continue
+        except (ValueError, TypeError):
+            print("You have entered invalid input for the above choice")
+            continue
         else:
-            return Book(identity, name, author, category, total_copies, available_copies)
-    except ValueError:
-        print("You have entered invalid input for the above choice/s")
-        sys.exit()
+            return Book(identity, title, author, category, total_copies, available_copies)
+
+
 
 
 def main():
@@ -60,11 +77,18 @@ Select an option: """))
 
 
 
-
+    books = []
     match user_response:
         case 1:
             book = add_book()
-            print(book)
+            books.append(book)
+
+        case 2:
+            for x in books:
+                print(x)
+
+
+
 
 
 main()
