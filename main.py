@@ -47,6 +47,7 @@ def add_book():
 
 
 def main():
+    books = []
     while True:
         try:
             print("===================================SELECTION MENU===================================")
@@ -63,29 +64,37 @@ def main():
 10.) Show a summary
             
 Select an option: """))
-            if 1 <= user_response <= 10:
-                print(f"You selected option {user_response}")
-                break
-            elif user_response == 0:
+
+            if user_response == 0:
                 print(f"Exiting library management system!")
                 break
-            elif user_response > 10 or user_response < 1:
+            if user_response > 10 or user_response < 1:
                 print("\nPlease select a number between 1 and 10!\n")
+                continue
         except ValueError:
             print("\nInvalid input!\n")
+            continue
 
 
 
 
-    books = []
-    match user_response:
-        case 1:
-            book = add_book()
-            books.append(book)
 
-        case 2:
-            for x in books:
-                print(x)
+
+        match user_response:
+            case 1:
+                book = add_book()
+                books.append(book)
+                print("\nBook added!\n")
+                continue
+            case 2:
+                if not books:
+                    print("\nNo books currently in the library.\n")
+                else:
+                    print("\n--- Book List ---")
+                    for x in books:
+                        print(
+                            f"ID: {x.identity} | Title: {x.title} | Author: {x.author} | Category: {x.category} | Total Copies: {x.total_copies} | Available Copies: {x.available_copies}")
+                    print("-----------------\n")
 
 
 
