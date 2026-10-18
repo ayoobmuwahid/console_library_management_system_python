@@ -1,4 +1,3 @@
-
 class Book:
     def __init__(self, identity, title, author, category, total_copies, available_copies):
         self.identity = identity
@@ -9,25 +8,25 @@ class Book:
         self.available_copies = available_copies
 
     def __str__(self):
-        return str( {"identity": self.identity,
-                "title": self.title,
-                "author": self.author,
-                "category": self.category,
-                "total_copies": self.total_copies,
-                "available_copies": self.available_copies})
+        return str({"identity": self.identity,
+                    "title": self.title,
+                    "author": self.author,
+                    "category": self.category,
+                    "total_copies": self.total_copies,
+                    "available_copies": self.available_copies})
+
 
 def add_book():
-
     while True:
         try:
             identity = input("Enter identity: ")
-            if not identity.replace(" ", "").isalnum():
+            if isinstance(identity, (int, float, bool)):
                 raise TypeError("Expected a string")
             title = input("Enter book title: ")
-            if not title.replace(" ", "").isalnum():
+            if not title.replace(" ", "").isalpha():
                 raise TypeError("Expected a string")
             author = input("Enter book author: ")
-            if not author.replace(" ", "").isalnum():
+            if not author.replace(" ", "").isalpha():
                 raise TypeError("Expected a string")
             category = input("Enter book category: ")
             if not category.replace(" ", "").isalpha():
@@ -42,8 +41,6 @@ def add_book():
             continue
         else:
             return Book(identity, title, author, category, total_copies, available_copies)
-
-
 
 
 def main():
@@ -75,11 +72,6 @@ Select an option: """))
             print("\nInvalid input!\n")
             continue
 
-
-
-
-
-
         match user_response:
             case 1:
                 book = add_book()
@@ -90,14 +82,14 @@ Select an option: """))
                 if not books:
                     print("\nNo books currently in the library.\n")
                 else:
-                    print("\n--- Book List ---")
-                    for x in books:
+                    print(
+                        "\n------------------------------------------------------------------------ Book List ------------------------------------------------------------------------")
+                    for book in books:
                         print(
-                            f"ID: {x.identity} | Title: {x.title} | Author: {x.author} | Category: {x.category} | Total Copies: {x.total_copies} | Available Copies: {x.available_copies}")
-                    print("-----------------\n")
-
-
-
+                            f"ID: {book.identity} | Title: {book.title} | Author: {book.author} | Category: {book.category} | Total Copies: {book.total_copies} | Available Copies: {book.available_copies}")
+                    print(
+                        "-----------------------------------------------------------------------------------------------------------------------------------------------------------\n")
+                    continue
 
 
 main()
