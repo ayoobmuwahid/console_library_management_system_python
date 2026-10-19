@@ -16,13 +16,15 @@ class Book:
                     "available_copies": self.available_copies})
 
 class Library:
-    def __init__(self,books):
-        self.book = []
+    def __init__(self):
+        self.books = []
+
+    def add_book(self, book):
+        self.books.append(book)
 
 
 
-
-def add_book():
+def prompt_for_book():
     while True:
         try:
             identity = int(input("Enter identity: "))
@@ -49,7 +51,6 @@ def add_book():
 
 def main():
     library = Library()
-    books = []
     while True:
         try:
             print("===================================SELECTION MENU===================================")
@@ -79,17 +80,17 @@ Select an option: """))
 
         match user_response:
             case 1:
-                book = add_book()
-                books.append(book)
+                book = prompt_for_book()
+                library.add_book(book)
                 print("\nBook added!\n")
                 continue
             case 2:
-                if not books:
+                if not library.books:
                     print("\nNo books currently in the library.\n")
                 else:
                     print(
                         "\n------------------------------------------------------------------------ Book List ------------------------------------------------------------------------")
-                    for book in books:
+                    for book in library.books:
                         print(
                             f"ID: {book.identity} | Title: {book.title} | Author: {book.author} | Category: {book.category} | Total Copies: {book.total_copies} | Available Copies: {book.available_copies}")
                     print(
