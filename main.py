@@ -116,6 +116,14 @@ Select an option: """))
                 if not library.books:
                     print("\nNo books currently in the library.\n")
                     continue
+                book_id = input("Enter the book ID: ")
+                book_id = int(book_id)
+
+                book_found = False
+                for book in library.books:
+                    if book.identity == book_id:
+                        book_found = True
+                        print(f"Current details of books: {book}")
 
 
 main()
