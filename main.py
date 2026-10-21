@@ -154,7 +154,7 @@ Select an option: """))
 
                         if book.available_copies > book.total_copies:
                             book.available_copies = book.total_copies
-                            print("Available copies cannot exceed total copies")
+                            print("\nAvailable copies cannot exceed total copies therefore available is now equal to toal copies.\n")
 
                         print("\nBook updated!\n")
                         break
