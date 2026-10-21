@@ -124,6 +124,44 @@ Select an option: """))
                     if book.identity == book_id:
                         book_found = True
                         print(f"Current details of books: {book}")
+                        print("Press Enter to keep the current value.\n")
+
+                        new_title = input(f"Title [{book.title}]: ")
+                        if new_title != "":
+                            book.title = new_title
+
+                        new_author = input(f"Author [{book.author}]: ")
+                        if new_author != "":
+                            book.author = new_author
+
+                        new_category = input(f"Category [{book.category}]: ")
+                        if new_category != "":
+                            book.category = new_category
+
+                        new_total = input(f"Total copies [{book.total_copies}]: ")
+                        if new_total != "":
+                            if new_total.isdigit():
+                                book.total_copies = int(new_total)
+                            else:
+                                print("Invalid number, total copies not changed.")
+
+                        new_available = input(f"Available copies [{book.available_copies}]: ")
+                        if new_available != "":
+                            if new_available.isdigit():
+                                book.available_copies = int(new_available)
+                            else:
+                                print("Invalid number, available copies not changed.")
+
+                        if book.available_copies > book.total_copies:
+                            book.available_copies = book.total_copies
+                            print("Available copies cannot exceed total copies")
+
+                        print("\nBook updated!\n")
+                        break
+
+                    if not book_found:
+                        print("\nNo book found with that ID.\n")
+                    continue
 
 
 main()
