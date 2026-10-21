@@ -49,6 +49,7 @@ def prompt_for_book():
             return Book(identity, title, author, category, total_copies, available_copies)
 
 
+
 def main():
     library = Library()
     while True:
@@ -98,7 +99,22 @@ Select an option: """))
                     continue
 
             case 3:
-                ...
+                    reference = input("Enter the title of the desired book: ").lower()
+                    book_found = False
+
+                    for book in library.books:
+                        if reference == book.title.lower():
+                            print(f"ID: {book.identity} | Title: {book.title} | Author: {book.author} | "
+                                  f"Category: {book.category} | Total Copies: {book.total_copies} | "
+                                  f"Available Copies: {book.available_copies}")
+                            book_found = True
+
+                    if not book_found:
+                        print("\nNo book found with that title.\n")
+                    continue
+
+
+
 
 main()
 
