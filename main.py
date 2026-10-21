@@ -23,7 +23,6 @@ class Library:
         self.books.append(book)
 
 
-
 def prompt_for_book():
     while True:
         try:
@@ -99,11 +98,11 @@ Select an option: """))
                     continue
 
             case 3:
-                    reference = input("Enter the title of the desired book: ").lower()
+                    reference = input("Enter the title or ID of the desired book: ").lower()
                     book_found = False
 
                     for book in library.books:
-                        if reference == book.title.lower():
+                        if reference == book.title.lower() or reference == str(book.identity):
                             print(f"ID: {book.identity} | Title: {book.title} | Author: {book.author} | "
                                   f"Category: {book.category} | Total Copies: {book.total_copies} | "
                                   f"Available Copies: {book.available_copies}")
@@ -113,5 +112,10 @@ Select an option: """))
                         print("\nNo book found with that title.\n")
                     continue
 
-main()
+            case 4:
+                if not library.books:
+                    print("\nNo books currently in the library.\n")
+                    continue
 
+
+main()
