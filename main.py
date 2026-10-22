@@ -204,6 +204,26 @@ Select an option: """))
                     print("\nNo book found with that ID.\n")
                 continue
 
+            case 7:
+                if not library.books:
+                    print("\nNo books currently in the library.\n")
+                    continue
+                book_id = input("Enter the book ID of the book you would like to return: ")
+                book_id = int(book_id)
+
+                book_found = False
+                for book in library.books:
+                    if book.identity == book_id:
+                        book_found = True
+                        book.available_copies = book.available_copies + 1
+                    print("\nBook successfully returned!\n")
+                    break
+
+                if not book_found:
+                    print("\nNo book found with that ID.\n")
+                continue
+
+
 
 
 
