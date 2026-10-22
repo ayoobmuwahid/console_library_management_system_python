@@ -25,6 +25,7 @@ class Library:
     def del_book(self, book):
         self.books.remove(book)
 
+
 def prompt_for_book():
     while True:
         try:
@@ -161,9 +162,9 @@ Select an option: """))
                         print("\nBook updated!\n")
                         break
 
-                    if not book_found:
-                        print("\nNo book found with that ID.\n")
-                    continue
+                if not book_found:
+                    print("\nNo book found with that ID.\n")
+                continue
 
             case 5:
                 if not library.books:
@@ -177,12 +178,34 @@ Select an option: """))
                     if book.identity == book_id:
                         book_found = True
                         library.del_book(book)
-                    print("\nBook deleted!\n")
+                        print("\nBook deleted!\n")
+                        break
+
+                if not book_found:
+                    print("\nNo book found with that ID.\n")
+                continue
+
+            case 6:
+                if not library.books:
+                    print("\nNo books currently in the library.\n")
+                    continue
+                book_id = input("Enter the book ID of the book you would like to borrow: ")
+                book_id = int(book_id)
+
+                book_found = False
+                for book in library.books:
+                    if book.identity == book_id:
+                        book_found = True
+                        book.available_copies = book.available_copies - 1
+                    print("\nBook borrowed successfully!\n")
                     break
 
                 if not book_found:
                     print("\nNo book found with that ID.\n")
                 continue
+
+
+
 
 
 
