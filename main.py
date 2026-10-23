@@ -80,6 +80,7 @@ Select an option: """))
             print("\nInvalid input!\n")
             continue
 
+
         match user_response:
             case 1:
                 book = prompt_for_book()
@@ -251,8 +252,6 @@ Select an option: """))
                         print(f"ID: {book.identity}"
                               f"Title: {book.title}")
 
-            case 9:
-                ...
 
 
             case 10:
@@ -274,20 +273,10 @@ Select an option: """))
                 print(f"{'=' * 79}\n")
                 continue
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            case 9:
+                if not library.books:
+                    print("\nNo books currently in the library.\n")
+                    continue
 
 
 
