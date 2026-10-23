@@ -64,8 +64,8 @@ def main():
 5.) Remove a book
 6.) Borrow a book
 7.) Return a book
-8.) Filter by category
-9.) Show unavailable books
+8.) Show unavailable books
+9.) Filter by category
 10.) Show a summary
             
 Select an option: """))
@@ -238,6 +238,53 @@ Select an option: """))
                 if not book_found:
                     print("\nNo book found with that ID.\n")
                 continue
+
+            case 8:
+                if not library.books:
+                    print("\nNo books currently in the library.\n")
+                    continue
+
+
+                for book in library.books:
+                    if book.available_copies ==0:
+                        print(f"The books below are currently unavailable.\n")
+                        print(f"ID: {book.identity}"
+                              f"Title: {book.title}")
+
+            case 9:
+                ...
+
+
+            case 10:
+                if not library.books:
+                    print("\nNo books currently in the library.\n")
+                    continue
+
+                sum_total = 0
+                sum_available = 0
+
+                for book in library.books:
+                    sum_total += book.total_copies
+                    sum_available += book.available_copies
+
+                print(f"\n{'=' * 35} SUMMARY {'=' * 35}")
+                print(f"Titles: {len(library.books)}")
+                print(f"Total copies: {sum_total}")
+                print(f"Available copies: {sum_available}")
+                print(f"{'=' * 79}\n")
+                continue
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
