@@ -14,6 +14,29 @@ class Book:
                     "category": self.category,
                     "total_copies": self.total_copies,
                     "available_copies": self.available_copies})
+    @property
+    def total_copies(self):
+        return self._total_copies
+
+    @total_copies.setter
+    def total_copies(self, value):
+        if not isinstance(value, int) or value < 0:
+            raise ValueError("Total copies must be a non-negative integer.")
+        self._total_copies = value
+
+    @property
+    def available_copies(self):
+        return self._available_copies
+
+    @available_copies.setter
+
+    def available_copies(self, value):
+        if not isinstance(value, int) or value < 0:
+            raise ValueError("Available copies must be a non-negative integer.")
+        if value > self._total_copies:
+            raise ValueError("Available copies cannot exceed total copies.")
+        self._available_copies = value
+
 
 class Library:
     def __init__(self):
@@ -41,9 +64,6 @@ def prompt_for_book():
                 raise TypeError("Expected a string")
             total_copies = int(input("Enter total copies: "))
             available_copies = int(input("Enter available copies: "))
-            if available_copies > total_copies:
-                print("Available copies exceeds total copies.")
-                continue
         except (ValueError, TypeError):
             print("You have entered invalid input for the above choice")
             continue
