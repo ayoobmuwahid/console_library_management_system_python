@@ -131,6 +131,7 @@ Select an option: """))
                                   f"Category: {book.category} | Total Copies: {book.total_copies} | "
                                   f"Available Copies: {book.available_copies}")
                             book_found = True
+                            break
 
                     if not book_found:
                         print("\nNo book found with that title.\n")
