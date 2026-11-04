@@ -1,6 +1,8 @@
+
 class Book:
-    def __init__(self, identity, title, author, category, total_copies, available_copies):
-        self.identity = identity
+    def __init__(self, identification, isbn, title, author, category, total_copies, available_copies):
+        self.identification = identification
+        self.isbn = isbn
         self.title = title
         self.author = author
         self.category = category
@@ -8,12 +10,14 @@ class Book:
         self.available_copies = available_copies
 
     def __str__(self):
-        return str({"identity": self.identity,
+        return str({"identification":self.identification,
+                    "isbn": self.isbn,
                     "title": self.title,
                     "author": self.author,
                     "category": self.category,
                     "total_copies": self.total_copies,
                     "available_copies": self.available_copies})
+
     @property
     def total_copies(self):
         return self._total_copies
@@ -29,7 +33,6 @@ class Book:
         return self._available_copies
 
     @available_copies.setter
-
     def available_copies(self, value):
         if not isinstance(value, int) or value < 0:
             raise ValueError("Available copies must be a non-negative integer.")
@@ -48,11 +51,11 @@ class Library:
     def del_book(self, book):
         self.books.remove(book)
 
-
+import uuid
 def prompt_for_book():
     while True:
         try:
-            identity = int(input("Enter identity: "))
+            isbn = int(input("Enter ISBN: "))
             title = input("Enter book title: ")
             if not title.replace(" ", "").isalpha():
                 raise TypeError("Expected a string")
@@ -68,7 +71,8 @@ def prompt_for_book():
             print("You have entered invalid input for the above choice")
             continue
         else:
-            return Book(identity, title, author, category, total_copies, available_copies)
+            idetification = uuid.uuid4()
+            return Book(idetification ,isbn, title, author, category, total_copies, available_copies)
 
 
 def main():
@@ -87,7 +91,9 @@ def main():
 8.) Show unavailable books
 9.) Filter by category
 10.) Show a summary
-            
+11.) Exit
+
+
 Select an option: """))
 
             if user_response == 0:
@@ -99,7 +105,6 @@ Select an option: """))
         except ValueError:
             print("\nInvalid input!\n")
             continue
-
 
         match user_response:
             case 1:
@@ -115,19 +120,19 @@ Select an option: """))
                         "\n------------------------------------------------------------------------ Book List ------------------------------------------------------------------------")
                     for book in library.books:
                         print(
-                            f"ID: {book.identity} | Title: {book.title} | Author: {book.author} | Category: {book.category} | Total Copies: {book.total_copies} | Available Copies: {book.available_copies}")
+                            f"ISBN: {book.isbn} | Title: {book.title} | Author: {book.author} | Category: {book.category} | Total Copies: {book.total_copies} | Available Copies: {book.available_copies} | Identity: {book.identification}")
                     print(
                         "-----------------------------------------------------------------------------------------------------------------------------------------------------------\n")
                     continue
 
             case 3:
                 try:
-                    reference = input("Enter the title or ID of the desired book: ").lower()
+                    reference = input("Enter the title or ISBN of the desired book: ").lower()
                     book_found = False
 
                     for book in library.books:
-                        if reference == book.title.lower() or reference == str(book.identity):
-                            print(f"ID: {book.identity} | Title: {book.title} | Author: {book.author} | "
+                        if reference == book.title.lower() or reference == str(book.isbn):
+                            print(f"ISBN: {book.isbn} | Title: {book.title} | Author: {book.author} | "
                                   f"Category: {book.category} | Total Copies: {book.total_copies} | "
                                   f"Available Copies: {book.available_copies}")
                             book_found = True
@@ -145,12 +150,12 @@ Select an option: """))
                     if not library.books:
                         print("\nNo books currently in the library.\n")
                         continue
-                    book_id = input("Enter the book ID: ")
-                    book_id = int(book_id)
+                    book_isbn = input("Enter the book ISBN: ")
+                    book_isbn = int(book_isbn)
 
                     book_found = False
                     for book in library.books:
-                        if book.identity == book_id:
+                        if book.isbn == book_isbn:
                             book_found = True
                             print(f"Current details of books: {book}")
                             print("Press Enter to keep the current value.\n")
@@ -183,7 +188,8 @@ Select an option: """))
 
                             if book.available_copies > book.total_copies:
                                 book.available_copies = book.total_copies
-                                print("\nAvailable copies cannot exceed total copies therefore available is now equal to toal copies.\n")
+                                print(
+                                    "\nAvailable copies cannot exceed total copies therefore available is now equal to toal copies.\n")
 
                             print("\nBook updated!\n")
                             break
@@ -192,7 +198,7 @@ Select an option: """))
                     continue
 
                 if not book_found:
-                    print("\nNo book found with that ID.\n")
+                    print("\nNo book found with that ISBN.\n")
                 continue
 
             case 5:
@@ -200,19 +206,19 @@ Select an option: """))
                     if not library.books:
                         print("\nNo books currently in the library.\n")
                         continue
-                    book_id = input("Enter the book ID: ")
-                    book_id = int(book_id)
+                    book_isbn = input("Enter the book ISBN: ")
+                    book_isbn = int(book_isbn)
 
                     book_found = False
                     for book in library.books:
-                        if book.identity == book_id:
+                        if book.isbn == book_isbn:
                             book_found = True
                             library.del_book(book)
                             print("\nBook deleted!\n")
                             break
 
                     if not book_found:
-                        print("\nNo book found with that ID.\n")
+                        print("\nNo book found with that ISBN.\n")
                     continue
                 except ValueError:
                     print("\nInvalid input, try again.\n")
@@ -223,19 +229,19 @@ Select an option: """))
                     if not library.books:
                         print("\nNo books currently in the library.\n")
                         continue
-                    book_id = input("Enter the book ID of the book you would like to borrow: ")
-                    book_id = int(book_id)
+                    book_isbn = input("Enter the ISBN of the book you would like to borrow: ")
+                    book_isbn = int(book_isbn)
 
                     book_found = False
                     for book in library.books:
-                        if book.identity == book_id:
+                        if book.isbn == book_isbn:
                             book_found = True
                             book.available_copies = book.available_copies - 1
                         print("\nBook borrowed successfully!\n")
                         break
 
                     if not book_found:
-                        print("\nNo book found with that ID.\n")
+                        print("\nNo book found with that ISBN.\n")
                     continue
                 except ValueError:
                     print("\nInvalid input, try again.\n")
@@ -245,20 +251,19 @@ Select an option: """))
                 if not library.books:
                     print("\nNo books currently in the library.\n")
                     continue
-                book_id = input("Enter the book ID of the book you would like to return: ")
-                book_id = int(book_id)
+                book_isbn = input("Enter the ISBN of the book you would like to return: ")
+                book_isbn = int(book_isbn)
 
                 book_found = False
                 for book in library.books:
-                    if book.identity == book_id:
+                    if book.isbn == book_isbn:
                         book_found = True
                         book.available_copies = book.available_copies + 1
                     print("\nBook successfully returned!\n")
                     break
 
-
                 if not book_found:
-                    print("\nNo book found with that ID.\n")
+                    print("\nNo book found with that ISBN.\n")
                 continue
 
             case 8:
@@ -266,14 +271,11 @@ Select an option: """))
                     print("\nNo books currently in the library.\n")
                     continue
 
-
                 for book in library.books:
-                    if book.available_copies ==0:
+                    if book.available_copies == 0:
                         print(f"The books below are currently unavailable.\n")
-                        print(f"ID: {book.identity}"
+                        print(f"ISBN: {book.isbn}"
                               f"Title: {book.title}")
-
-
 
             case 10:
                 if not library.books:
@@ -298,10 +300,6 @@ Select an option: """))
                 if not library.books:
                     print("\nNo books currently in the library.\n")
                     continue
-
-
-
-
 
 
 main()
