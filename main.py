@@ -116,13 +116,15 @@ Select an option: """))
                 if not library.books:
                     print("\nNo books currently in the library.\n")
                 else:
-                    print(
-                        "\n------------------------------------------------------------------------ Book List ------------------------------------------------------------------------")
+                    width = 155
+
+                    print("\n" + " Book List ".center(width, "-"))
                     for book in library.books:
                         print(
-                            f"ISBN: {book.isbn} | Title: {book.title} | Author: {book.author} | Category: {book.category} | Total Copies: {book.total_copies} | Available Copies: {book.available_copies} | Identity: {book.identification}")
-                    print(
-                        "-----------------------------------------------------------------------------------------------------------------------------------------------------------\n")
+                            f"ISBN: {book.isbn} | Title: {book.title} | Author: {book.author} | "
+                            f"Category: {book.category} | Total Copies: {book.total_copies} | "
+                            f"Available Copies: {book.available_copies}")
+                    print("-" * width + "\n")
                     continue
 
             case 3:
