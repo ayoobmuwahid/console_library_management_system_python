@@ -26,7 +26,6 @@ class Book:
                     "available_copies": self.available_copies})
 
     def to_row(self):
-        """Book -> list of values in the same order as FIELDS."""
         return [self.identification, self.isbn, self.title, self.author,
                 self.category, self.total_copies, self.available_copies]
 
@@ -58,7 +57,6 @@ class Library:
         self.filename = filename
 
     def get_books(self):
-        """Read the CSV and rebuild a list of Book objects."""
         if not os.path.exists(self.filename):
             return []
         books = []
@@ -74,7 +72,6 @@ class Library:
         return books
 
     def save_books(self, books):
-        """Overwrite the CSV with the given list of books."""
         with open(self.filename, "w", newline="") as file:
             writer = csv.writer(file)
             writer.writerow(FIELDS)
@@ -82,7 +79,6 @@ class Library:
                 writer.writerow(book.to_row())
 
     def add_book(self, book):
-        """Append a single book to the CSV (writes the header if the file is new)."""
         is_new = not os.path.exists(self.filename) or os.path.getsize(self.filename) == 0
         with open(self.filename, "a", newline="") as file:
             writer = csv.writer(file)
@@ -91,27 +87,60 @@ class Library:
             writer.writerow(book.to_row())
 
 
-def prompt_for_book():
+def prompt_for_book(existing_isbns):
     while True:
         try:
             isbn = int(input("Enter ISBN: "))
+            if isbn in existing_isbns:
+                print("\nError: A book with this ISBN already exists! Please try a different ISBN.\n")
+                continue
+
             title = input("Enter book title: ")
             if not title.replace(" ", "").isalpha():
                 raise TypeError("Expected a string")
+
             author = input("Enter book author: ")
             if not author.replace(" ", "").isalpha():
                 raise TypeError("Expected a string")
-            category = input("Enter book category: ")
-            if not category.replace(" ", "").isalpha():
-                raise TypeError("Expected a string")
+
+            categories = [
+                "Fiction", "Nonfiction", "Science Fiction", "Fantasy",
+                "Mystery", "Biography", "History", "Science",
+                "Romance", "Self Help"
+            ]
+
+            while True:
+                try:
+                    print("\nCATEGORIES:\n")
+                    print("""
+                    1) Fiction
+                    2) Nonfiction
+                    3) Science Fiction
+                    4) Fantasy
+                    5) Mystery
+                    6) Biography
+                    7) History
+                    8) Science
+                    9) Romance
+                    10) Self Help\n""")
+
+                    cat_choice = int(input("Choose a category: "))
+
+                    if 1 <= cat_choice <= 10:
+                        category = categories[cat_choice - 1]
+                        break
+                    else:
+                        print("\nPlease select a number between 1 and 10!\n")
+                except ValueError:
+                    print("\nInvalid input! Please enter a number.\n")
             total_copies = int(input("Enter total copies: "))
             available_copies = int(input("Enter available copies: "))
             identification = uuid.uuid4()
             return Book(str(identification), isbn, title, author, category, total_copies, available_copies)
-        except (ValueError, TypeError):
-            print("You have entered invalid input for the above choice")
-            continue
 
+        except (ValueError, TypeError):
+            print("You have entered invalid input for the above choice\n")
+            continue
 
 def main():
     library = Library()
@@ -146,7 +175,9 @@ Select an option: """))
 
         match user_response:
             case 1:
-                book = prompt_for_book()
+                existing_books = library.get_books()
+                existing_isbns = {b.isbn for b in existing_books}
+                book = prompt_for_book(existing_isbns)
                 library.add_book(book)
                 print("\nBook added!\n")
                 continue
