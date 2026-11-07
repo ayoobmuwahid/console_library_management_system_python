@@ -1,5 +1,9 @@
 import csv
 import os
+import uuid
+
+FIELDS = ["identification", "isbn", "title", "author",
+          "category", "total_copies", "available_copies"]
 
 class Book:
     def __init__(self, identification, isbn, title, author, category, total_copies, available_copies):
@@ -45,15 +49,32 @@ class Book:
 
 class Library:
     def __init__(self):
-        self.books = []
+        self.filename = "books.csv"
 
     def add_book(self, book):
-        self.books.append(book)
+        row = [book.identification, book.isbn, book.title, book.author,
+               book.category, book.total_copies, book.available_copies]
+        with open(self.filename, "a", newline="") as file:
+            csv.writer(file).writerow(row)
 
-    def del_book(self, book):
-        self.books.remove(book)
+    def get_books(self):
+        books = []
+        if not os.path.exists(self.filename):
+            return books
+        with open(self.filename, newline="") as file:
+            for row in csv.reader(file):
+                books.append(Book(row[0], int(row[1]), row[2], row[3],
+                                  row[4], int(row[5]), int(row[6])))
+        return books
 
-import uuid
+    def save_books(self, books):
+        with open(self.filename, "w", newline="") as file:   
+            writer = csv.writer(file)
+            for book in books:
+                writer.writerow([book.identification, book.isbn, book.title, book.author,
+                                 book.category, book.total_copies, book.available_copies])
+
+
 def prompt_for_book():
     while True:
         try:
