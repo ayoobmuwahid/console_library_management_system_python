@@ -5,6 +5,7 @@ import uuid
 FIELDS = ["identification", "isbn", "title", "author",
           "category", "total_copies", "available_copies"]
 
+
 class Book:
     def __init__(self, identification, isbn, title, author, category, total_copies, available_copies):
         self.identification = identification
@@ -16,13 +17,18 @@ class Book:
         self.available_copies = available_copies
 
     def __str__(self):
-        return str({"identification":self.identification,
+        return str({"identification": self.identification,
                     "isbn": self.isbn,
                     "title": self.title,
                     "author": self.author,
                     "category": self.category,
                     "total_copies": self.total_copies,
                     "available_copies": self.available_copies})
+
+    def to_row(self):
+        """Book -> list of values in the same order as FIELDS."""
+        return [self.identification, self.isbn, self.title, self.author,
+                self.category, self.total_copies, self.available_copies]
 
     @property
     def total_copies(self):
@@ -48,31 +54,41 @@ class Book:
 
 
 class Library:
-    def __init__(self):
-        self.filename = "books.csv"
-
-    def add_book(self, book):
-        row = [book.identification, book.isbn, book.title, book.author,
-               book.category, book.total_copies, book.available_copies]
-        with open(self.filename, "a", newline="") as file:
-            csv.writer(file).writerow(row)
+    def __init__(self, filename="books.csv"):
+        self.filename = filename
 
     def get_books(self):
-        books = []
+        """Read the CSV and rebuild a list of Book objects."""
         if not os.path.exists(self.filename):
-            return books
+            return []
+        books = []
         with open(self.filename, newline="") as file:
-            for row in csv.reader(file):
-                books.append(Book(row[0], int(row[1]), row[2], row[3],
-                                  row[4], int(row[5]), int(row[6])))
+            for row in csv.DictReader(file):
+                books.append(Book(row["identification"],
+                                  int(row["isbn"]),
+                                  row["title"],
+                                  row["author"],
+                                  row["category"],
+                                  int(row["total_copies"]),
+                                  int(row["available_copies"])))
         return books
 
     def save_books(self, books):
-        with open(self.filename, "w", newline="") as file:   
+        """Overwrite the CSV with the given list of books."""
+        with open(self.filename, "w", newline="") as file:
             writer = csv.writer(file)
+            writer.writerow(FIELDS)
             for book in books:
-                writer.writerow([book.identification, book.isbn, book.title, book.author,
-                                 book.category, book.total_copies, book.available_copies])
+                writer.writerow(book.to_row())
+
+    def add_book(self, book):
+        """Append a single book to the CSV (writes the header if the file is new)."""
+        is_new = not os.path.exists(self.filename) or os.path.getsize(self.filename) == 0
+        with open(self.filename, "a", newline="") as file:
+            writer = csv.writer(file)
+            if is_new:
+                writer.writerow(FIELDS)
+            writer.writerow(book.to_row())
 
 
 def prompt_for_book():
@@ -90,12 +106,11 @@ def prompt_for_book():
                 raise TypeError("Expected a string")
             total_copies = int(input("Enter total copies: "))
             available_copies = int(input("Enter available copies: "))
+            identification = uuid.uuid4()
+            return Book(str(identification), isbn, title, author, category, total_copies, available_copies)
         except (ValueError, TypeError):
             print("You have entered invalid input for the above choice")
             continue
-        else:
-            idetification = uuid.uuid4()
-            return Book(idetification,isbn,title,author,category,total_copies,available_copies)
 
 
 def main():
@@ -119,11 +134,11 @@ def main():
 
 Select an option: """))
 
-            if user_response == 0:
-                print(f"Exiting library management system!")
+            if user_response == 11:
+                print("Exiting library management system!")
                 break
             if user_response > 10 or user_response < 1:
-                print("\nPlease select a number between 1 and 10!\n")
+                print("\nPlease select a number between 1 and 11!\n")
                 continue
         except ValueError:
             print("\nInvalid input!\n")
@@ -135,51 +150,49 @@ Select an option: """))
                 library.add_book(book)
                 print("\nBook added!\n")
                 continue
+
             case 2:
-                if not library.books:
+                books = library.get_books()
+                if not books:
                     print("\nNo books currently in the library.\n")
                 else:
                     width = 155
-
                     print("\n" + " Book List ".center(width, "-"))
-                    for book in library.books:
+                    for book in books:
                         print(
                             f"ISBN: {book.isbn} | Title: {book.title} | Author: {book.author} | "
                             f"Category: {book.category} | Total Copies: {book.total_copies} | "
                             f"Available Copies: {book.available_copies}")
                     print("-" * width + "\n")
-                    continue
+                continue
 
             case 3:
-                try:
-                    reference = input("Enter the title or ISBN of the desired book: ").lower()
-                    book_found = False
+                books = library.get_books()
+                reference = input("Enter the title or ISBN of the desired book: ").lower()
+                book_found = False
 
-                    for book in library.books:
-                        if reference == book.title.lower() or reference == str(book.isbn):
-                            print(f"ISBN: {book.isbn} | Title: {book.title} | Author: {book.author} | "
-                                  f"Category: {book.category} | Total Copies: {book.total_copies} | "
-                                  f"Available Copies: {book.available_copies}")
-                            book_found = True
-                            break
+                for book in books:
+                    if reference == book.title.lower() or reference == str(book.isbn):
+                        print(f"ISBN: {book.isbn} | Title: {book.title} | Author: {book.author} | "
+                              f"Category: {book.category} | Total Copies: {book.total_copies} | "
+                              f"Available Copies: {book.available_copies}")
+                        book_found = True
+                        break
 
-                    if not book_found:
-                        print("\nNo book found with that title.\n")
-                    continue
-                except ValueError:
-                    print("\nInvalid input, try again.\n")
-                    continue
+                if not book_found:
+                    print("\nNo book found with that title or ISBN.\n")
+                continue
 
             case 4:
+                books = library.get_books()
                 try:
-                    if not library.books:
+                    if not books:
                         print("\nNo books currently in the library.\n")
                         continue
-                    book_isbn = input("Enter the book ISBN: ")
-                    book_isbn = int(book_isbn)
+                    book_isbn = int(input("Enter the book ISBN: "))
 
                     book_found = False
-                    for book in library.books:
+                    for book in books:
                         if book.isbn == book_isbn:
                             book_found = True
                             print(f"Current details of books: {book}")
@@ -213,9 +226,10 @@ Select an option: """))
 
                             if book.available_copies > book.total_copies:
                                 book.available_copies = book.total_copies
-                                print(
-                                    "\nAvailable copies cannot exceed total copies therefore available is now equal to toal copies.\n")
+                                print("\nAvailable copies cannot exceed total copies, "
+                                      "so available is now equal to total copies.\n")
 
+                            library.save_books(books)
                             print("\nBook updated!\n")
                             break
                 except ValueError:
@@ -227,18 +241,19 @@ Select an option: """))
                 continue
 
             case 5:
+                books = library.get_books()
                 try:
-                    if not library.books:
+                    if not books:
                         print("\nNo books currently in the library.\n")
                         continue
-                    book_isbn = input("Enter the book ISBN: ")
-                    book_isbn = int(book_isbn)
+                    book_isbn = int(input("Enter the book ISBN: "))
 
                     book_found = False
-                    for book in library.books:
+                    for book in books:
                         if book.isbn == book_isbn:
                             book_found = True
-                            library.del_book(book)
+                            books.remove(book)
+                            library.save_books(books)
                             print("\nBook deleted!\n")
                             break
 
@@ -250,20 +265,24 @@ Select an option: """))
                     continue
 
             case 6:
+                books = library.get_books()
                 try:
-                    if not library.books:
+                    if not books:
                         print("\nNo books currently in the library.\n")
                         continue
-                    book_isbn = input("Enter the ISBN of the book you would like to borrow: ")
-                    book_isbn = int(book_isbn)
+                    book_isbn = int(input("Enter the ISBN of the book you would like to borrow: "))
 
                     book_found = False
-                    for book in library.books:
+                    for book in books:
                         if book.isbn == book_isbn:
                             book_found = True
-                            book.available_copies = book.available_copies - 1
-                        print("\nBook borrowed successfully!\n")
-                        break
+                            if book.available_copies == 0:
+                                print("\nNo copies of that book are currently available.\n")
+                            else:
+                                book.available_copies -= 1
+                                library.save_books(books)
+                                print("\nBook borrowed successfully!\n")
+                            break
 
                     if not book_found:
                         print("\nNo book found with that ISBN.\n")
@@ -273,58 +292,73 @@ Select an option: """))
                     continue
 
             case 7:
-                if not library.books:
-                    print("\nNo books currently in the library.\n")
+                books = library.get_books()
+                try:
+                    if not books:
+                        print("\nNo books currently in the library.\n")
+                        continue
+                    book_isbn = int(input("Enter the ISBN of the book you would like to return: "))
+
+                    book_found = False
+                    for book in books:
+                        if book.isbn == book_isbn:
+                            book_found = True
+                            if book.available_copies == book.total_copies:
+                                print("\nAll copies of that book are already in the library.\n")
+                            else:
+                                book.available_copies += 1
+                                library.save_books(books)
+                                print("\nBook successfully returned!\n")
+                            break
+
+                    if not book_found:
+                        print("\nNo book found with that ISBN.\n")
                     continue
-                book_isbn = input("Enter the ISBN of the book you would like to return: ")
-                book_isbn = int(book_isbn)
-
-                book_found = False
-                for book in library.books:
-                    if book.isbn == book_isbn:
-                        book_found = True
-                        book.available_copies = book.available_copies + 1
-                    print("\nBook successfully returned!\n")
-                    break
-
-                if not book_found:
-                    print("\nNo book found with that ISBN.\n")
-                continue
+                except ValueError:
+                    print("\nInvalid input, try again.\n")
+                    continue
 
             case 8:
-                if not library.books:
+                books = library.get_books()
+                if not books:
                     print("\nNo books currently in the library.\n")
                     continue
 
-                for book in library.books:
-                    if book.available_copies == 0:
-                        print(f"The books below are currently unavailable.\n")
-                        print(f"ISBN: {book.isbn}"
-                              f"Title: {book.title}")
+                unavailable = [b for b in books if b.available_copies == 0]
+                if unavailable:
+                    print("\nThe books below are currently unavailable.\n")
+                    for book in unavailable:
+                        print(f"ISBN: {book.isbn} | Title: {book.title}")
+                    print()
+                else:
+                    print("\nAll books are currently available.\n")
+                continue
+
+            case 9:
+                books = library.get_books()
+                if not books:
+                    print("\nNo books currently in the library.\n")
+                    continue
 
             case 10:
-                if not library.books:
+                books = library.get_books()
+                if not books:
                     print("\nNo books currently in the library.\n")
                     continue
 
                 sum_total = 0
                 sum_available = 0
 
-                for book in library.books:
+                for book in books:
                     sum_total += book.total_copies
                     sum_available += book.available_copies
 
                 print(f"\n{'=' * 35} SUMMARY {'=' * 35}")
-                print(f"Titles: {len(library.books)}")
+                print(f"Titles: {len(books)}")
                 print(f"Total copies: {sum_total}")
                 print(f"Available copies: {sum_available}")
                 print(f"{'=' * 79}\n")
                 continue
-
-            case 9:
-                if not library.books:
-                    print("\nNo books currently in the library.\n")
-                    continue
 
 
 main()
